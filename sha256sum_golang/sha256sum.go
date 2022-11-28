@@ -6,6 +6,5 @@ import (
 )
 
 func main() {
-    msg, _ := sha256_golang.Hello("world")
-    fmt.Println(msg)
+
 }
