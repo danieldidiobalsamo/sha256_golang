@@ -1,5 +1,7 @@
 package sha256_golang
 
+import "errors"
+
 func PreProcess(msg []rune) []rune {
 	proc := msg
 	originalLengthBits := uint64(len(msg) * 8)
@@ -27,4 +29,17 @@ func PreProcess(msg []rune) []rune {
 	}
 
 	return proc
+}
+
+func ParseBlock(msg []rune, index int) ([]rune, error) {
+	nbBlocks := len(msg) / 64
+
+	if index > nbBlocks {
+		return nil, errors.New("index is greater than the number of 512-bits blocks")
+	}
+
+	start := ((512 * index) / 8)
+	end := (start + (512 / 8))
+
+	return msg[start:end], nil
 }
