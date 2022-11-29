@@ -2,8 +2,15 @@ package sha256_golang
 
 import "errors"
 
-func PreProcess(msg []rune) []rune {
-	proc := msg
+func PreProcess(msg []rune) []uint32 {
+
+	// convert msg runes to uint32 and copy to proc
+	proc := make([]uint32, len(msg))
+
+	for i := range msg {
+		proc[i] = uint32(msg[i])
+	}
+
 	originalLengthBits := uint64(len(msg) * 8)
 
 	// append 1 (1000 0000)
@@ -24,14 +31,14 @@ func PreProcess(msg []rune) []rune {
 	for i := 0; i < 8; i++ {
 		val64 := originalLengthBits & mask
 		val := uint8(val64 >> (56 - (8 * i)))
-		proc = append(proc, rune(val))
+		proc = append(proc, uint32(val))
 		mask >>= 8
 	}
 
 	return proc
 }
 
-func ParseBlock(msg []rune, index int) ([]rune, error) {
+func ParseBlock(msg []uint32, index int) ([]uint32, error) {
 	nbBlocks := len(msg) / 64
 
 	if index > nbBlocks {
@@ -67,4 +74,31 @@ func InitHash() ([]uint32, []uint32) {
 	}
 
 	return h_0, k
+}
+
+func MessageSchedule(chunk []uint32) []uint32 {
+	// initialize the schedule with zeros
+	w := make([]uint32, 64)
+
+	// copy the chunk into first 16 words of message schedule
+
+	for i := 0; i < 16; i++ {
+		bytes_line := chunk[4*i : (4*i)+4]
+
+		word := uint32(0)
+
+		for j := 0; j < 4; j++ {
+			word |= (bytes_line[j]) << (24 - (8 * j))
+		}
+
+		w[i] = word
+	}
+
+	// schedule
+
+	for i := 16; i <= 63; i++ {
+		w[i] = Sigma_0(w[i-15]) + w[i-7] + Sigma_1(w[i-2]) + w[i-16]
+	}
+
+	return w
 }

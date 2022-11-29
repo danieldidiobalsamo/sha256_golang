@@ -13,9 +13,28 @@ func getLongMessage() string {
 	return "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 }
 
-func getShortPreProcessed() []rune {
+func getShortPreProcessed() []uint32 {
 	rawMsg := getShortMessage()
 	return PreProcess([]rune(rawMsg))
+}
+
+func getLongPreProcessed() []uint32 {
+	rawMsg := getLongMessage()
+	return PreProcess([]rune(rawMsg))
+}
+
+func getFirstBlockShort() []uint32 {
+	msg := getShortPreProcessed()
+	block, _ := ParseBlock(msg, 0)
+
+	return block
+}
+
+func getFirstBlockLong() []uint32 {
+	msg := getLongPreProcessed()
+	block, _ := ParseBlock(msg, 0)
+
+	return block
 }
 
 func TestPreProcessShort(t *testing.T) {
@@ -23,7 +42,7 @@ func TestPreProcessShort(t *testing.T) {
 	rawMsg := getShortMessage()
 	msg := PreProcess([]rune(rawMsg))
 
-	pre_processed_bytes := []rune{104, 105, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	pre_processed_bytes := []uint32{104, 105, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 16}
 
@@ -35,7 +54,7 @@ func TestPreProcessLong(t *testing.T) {
 	rawMsg := getLongMessage()
 	msg := PreProcess([]rune(rawMsg))
 
-	pre_processed_bytes := []rune{97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
+	pre_processed_bytes := []uint32{97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
 		97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
 		97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
 		97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
@@ -51,7 +70,7 @@ func TestParseBlockValid(t *testing.T) {
 
 	block, _ := ParseBlock(msg, 0)
 
-	valid_block := []rune{104, 105, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	valid_block := []uint32{104, 105, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 16}
 
@@ -64,7 +83,7 @@ func TestParseBlockInvalid(t *testing.T) {
 
 	block, err := ParseBlock(msg, 65)
 
-	assert.Equal(t, []int32([]int32(nil)), block)
+	assert.Equal(t, []uint32([]uint32(nil)), block)
 	assert.EqualError(t, err, "index is greater than the number of 512-bits blocks")
 }
 
@@ -90,4 +109,42 @@ func TestHashInit(t *testing.T) {
 
 	assert.Equal(t, h_0, h0Good)
 	assert.Equal(t, k, kGood)
+}
+
+func TestMessageScheduleShort(t *testing.T) {
+	block := getFirstBlockShort()
+	schedule := MessageSchedule(block)
+
+	goodSchedule := []uint32{
+		0x68698000, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x10,
+		0x68698000, 0xa0000, 0xf01a2359, 0x40000284, 0x55fbc086, 0x102a800, 0x98469ec2,
+		0x6969c00b, 0x9ca90e8c, 0xc838a742, 0xe6b0fa06, 0x9d76f3b8, 0x637cabb0, 0x3fd29f6b,
+		0x4a24a308, 0x26de146a, 0x769b20c2, 0xd4a1e662, 0x8216fabc, 0x6979e1e0, 0xe21a04f8,
+		0x4986abe7, 0x6dfdd0d6, 0xa9b1620c, 0x78fd50cb, 0x175816cc, 0x3107dce8, 0xcf90ccf0,
+		0x3947f012, 0x5eb8d9f8, 0x4f68069d, 0x59bebff1, 0x3827d60e, 0x65a47db8, 0x18f6702f,
+		0xc0ed757b, 0xa4413c33, 0x8263307e, 0xd659ac97, 0xadc5d052, 0x62050d31, 0xa3cff18e,
+		0xe46c7a47, 0x5a0f7f38, 0x3b11b357, 0xb854af2c, 0x33769263, 0x6d18e691,
+	}
+
+	assert.Equal(t, schedule, goodSchedule)
+}
+
+func TestMessageScheduleLong(t *testing.T) {
+	block := getFirstBlockLong()
+	schedule := MessageSchedule(block)
+
+	goodSchedule := []uint32{
+		0x61616161, 0x61616161, 0x61616161, 0x61616161, 0x61616161, 0x61616161, 0x61616161,
+		0x61616161, 0x61616161, 0x61616161, 0x61616161, 0x61616161, 0x61616161, 0x61616161,
+		0x61616161, 0x61616161, 0xf5fe3e3c, 0xf5fe3e3c, 0x325e1547, 0x325e1547, 0x21816259,
+		0x21816259, 0xf6e94e20, 0x8b862afb, 0x7d00364d, 0xfa768297, 0x48667e8b, 0xaac11a45,
+		0xa204f10, 0x9d4236b5, 0xb206cf59, 0x24e7cbf6, 0x97bb3687, 0x68705df9, 0xe854b988,
+		0x50bd5067, 0x79787c0b, 0xe26c65b1, 0xba44d38d, 0x7a6111c9, 0x692a536e, 0xdcd178c,
+		0xd5814de2, 0x8002d65e, 0x7144aacf, 0xa03e53ea, 0x6b2a892, 0x422c2043, 0x8f83ee50,
+		0xf4e2f28d, 0x83c84b33, 0xf00b98ae, 0xad7b406a, 0xe17d306c, 0x9e4f1014, 0x8d153877,
+		0x247dd0d2, 0x590f736c, 0x309f2fbc, 0x3fc5bb9f, 0x1aa4b3a7, 0x38409f61, 0xea3ab4f6,
+		0xe77f61a,
+	}
+
+	assert.Equal(t, schedule, goodSchedule)
 }
