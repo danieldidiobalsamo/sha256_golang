@@ -205,3 +205,30 @@ func TestAppendHashValues(t *testing.T) {
 
 	assert.Equal(t, hashGood, hash)
 }
+
+func TestSha256EmptyString(t *testing.T) {
+	msg := ""
+
+	hash := Sha256([]rune(msg))
+	hashGood := "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+	assert.Equal(t, hashGood, hash)
+}
+
+func TestSha256Short(t *testing.T) {
+	msg := getShortMessage()
+
+	hash := Sha256([]rune(msg))
+	hashGood := "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4"
+
+	assert.Equal(t, hashGood, hash)
+}
+
+func TestSha256Long(t *testing.T) {
+	msg := getLongMessage()
+
+	hash := Sha256([]rune(msg))
+	hashGood := "3e24531cdaa595ab56f976b96c1a1df8009eabec300a5a0261c0e44f47a43b89"
+
+	assert.Equal(t, hashGood, hash)
+}

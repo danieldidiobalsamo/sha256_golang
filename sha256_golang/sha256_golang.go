@@ -164,3 +164,24 @@ func AppendHashValues(hashValues []uint32) string {
 
 	return hash
 }
+
+func Sha256(rawMsg []rune) string {
+	msg := PreProcess(rawMsg)
+
+	hash, k := InitHash()
+	var workingVar WorkingVariables
+
+	nbBlocks := len(msg) / 64
+
+	for i := 0; i < nbBlocks; i++ {
+		workingVar = NewWorkingVariables(hash)
+
+		block, _ := ParseBlock(msg, i) // TODO gérer l'erreur
+
+		schedule := MessageSchedule(block)
+		workingVar = CompressChunk(workingVar, schedule, k)
+		hash = AddCompressedChunkInHash(hash, workingVar)
+	}
+
+	return AppendHashValues(hash)
+}
