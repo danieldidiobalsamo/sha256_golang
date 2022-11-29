@@ -194,3 +194,14 @@ func TestAddCompressedChunkInHash(t *testing.T) {
 
 	assert.Equal(t, updatedHash, updatedGood)
 }
+
+func TestAppendHashValues(t *testing.T) {
+	updated_hash := []uint32{
+		0x8f434346, 0x648f6b96, 0xdf89dda9, 0x01c5176b, 0x10a6d839, 0x61dd3c1a, 0xc88b59b2,
+		0xdc327aa4}
+
+	hash := AppendHashValues(updated_hash)
+	hashGood := "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4"
+
+	assert.Equal(t, hashGood, hash)
+}

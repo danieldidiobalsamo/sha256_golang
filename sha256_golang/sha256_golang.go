@@ -2,6 +2,7 @@ package sha256_golang
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 )
 
@@ -151,4 +152,15 @@ func AddCompressedChunkInHash(hash []uint32, compressed WorkingVariables) []uint
 	}
 
 	return updated
+}
+
+func AppendHashValues(hashValues []uint32) string {
+	var hash string
+
+	for _, h := range hashValues {
+		hex := fmt.Sprintf("%08x", h)
+		hash += hex
+	}
+
+	return hash
 }
