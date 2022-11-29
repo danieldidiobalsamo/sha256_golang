@@ -37,6 +37,16 @@ func getFirstBlockLong() []uint32 {
 	return block
 }
 
+func getCompressedMsgShort() WorkingVariables {
+	schedule := MessageSchedule(getFirstBlockShort())
+	current, k := InitHash()
+	currentWorkingVar := NewWorkingVariables(current)
+
+	compressed := CompressChunk(currentWorkingVar, schedule, k)
+
+	return compressed
+}
+
 func TestPreProcessShort(t *testing.T) {
 
 	rawMsg := getShortMessage()
@@ -172,4 +182,15 @@ func TestCompressChunk(t *testing.T) {
 		0x8051ad8b})
 
 	assert.Equal(t, compressed, compressedGood)
+}
+
+func TestAddCompressedChunkInHash(t *testing.T) {
+	hash, _ := InitHash()
+	compressed := getCompressedMsgShort()
+
+	updatedHash := AddCompressedChunkInHash(hash, compressed)
+	updatedGood := []uint32{0x8f434346, 0x648f6b96, 0xdf89dda9, 0x01c5176b, 0x10a6d839, 0x61dd3c1a, 0xc88b59b2,
+		0xdc327aa4}
+
+	assert.Equal(t, updatedHash, updatedGood)
 }

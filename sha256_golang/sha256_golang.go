@@ -1,6 +1,9 @@
 package sha256_golang
 
-import "errors"
+import (
+	"errors"
+	"reflect"
+)
 
 func PreProcess(msg []rune) []uint32 {
 
@@ -131,4 +134,21 @@ func CompressChunk(initWorkingVar WorkingVariables, schedule []uint32, k []uint3
 	}
 
 	return currentWorkingVar
+}
+
+func AddCompressedChunkInHash(hash []uint32, compressed WorkingVariables) []uint32 {
+	var updated []uint32
+
+	values := reflect.ValueOf(compressed)
+	types := values.Type()
+
+	for i := 0; i < values.NumField(); i++ {
+
+		val := uint32(values.Field(i).Uint())
+		index := types.Field(i).Index[0]
+
+		updated = append(updated, hash[index]+val)
+	}
+
+	return updated
 }
