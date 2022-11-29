@@ -148,3 +148,16 @@ func TestMessageScheduleLong(t *testing.T) {
 
 	assert.Equal(t, schedule, goodSchedule)
 }
+
+func TestCompressWord(t *testing.T) {
+	schedule := MessageSchedule(getFirstBlockShort())
+
+	current, k := InitHash()
+	currentWorkingVar := NewWorkingVariables(current)
+
+	compressed := CompressWord(currentWorkingVar, schedule[0], k[0])
+	compressedGood := NewWorkingVariables([]uint32{0x6472084d, 0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0x13162a2, 0x510e527f, 0x9b05688c,
+		0x1f83d9ab})
+
+	assert.Equal(t, compressed, compressedGood)
+}

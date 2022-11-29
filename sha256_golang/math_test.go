@@ -24,11 +24,11 @@ func TestBigSigma1(t *testing.T) {
 }
 
 func TestChoice(t *testing.T) {
-	ch := choice(0x8236fd0f, 0x5610b48b, 0x68977312)
+	ch := Choice(0x8236fd0f, 0x5610b48b, 0x68977312)
 	assert.Equal(t, ch, uint32(0x6a91b61b))
 }
 
 func TestMajority(t *testing.T) {
-	maj := majority(0x5c6f9c99, 0x802dec24, 0xe18de1a7)
+	maj := Majority(0x5c6f9c99, 0x802dec24, 0xe18de1a7)
 	assert.Equal(t, maj, uint32(0xc02deca5))
 }

@@ -102,3 +102,23 @@ func MessageSchedule(chunk []uint32) []uint32 {
 
 	return w
 }
+
+func CompressWord(current WorkingVariables, word uint32, k uint32) WorkingVariables {
+	s1 := BigSigma_1(current.e)
+	ch := Choice(current.e, current.f, current.g)
+	temp1 := current.h + s1 + ch + k + word
+	s0 := BigSigma_0(current.a)
+	maj := Majority(current.a, current.b, current.c)
+	temp2 := s0 + maj
+
+	h := current.g
+	g := current.f
+	f := current.e
+	e := current.d + temp1
+	d := current.c
+	c := current.b
+	b := current.a
+	a := temp1 + temp2
+
+	return NewWorkingVariables([]uint32{a, b, c, d, e, f, g, h})
+}

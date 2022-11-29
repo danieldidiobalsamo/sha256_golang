@@ -18,10 +18,10 @@ func BigSigma_1(x uint32) uint32 {
 	return bits.RotateLeft32(x, -6) ^ bits.RotateLeft32(x, -11) ^ bits.RotateLeft32(x, -25)
 }
 
-func choice(e, f, g uint32) uint32 {
+func Choice(e, f, g uint32) uint32 {
 	return (e & f) ^ (^e & g)
 }
 
-func majority(a, b, c uint32) uint32 {
+func Majority(a, b, c uint32) uint32 {
 	return (a & b) ^ (a & c) ^ (b & c)
 }
