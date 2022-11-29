@@ -122,3 +122,13 @@ func CompressWord(current WorkingVariables, word uint32, k uint32) WorkingVariab
 
 	return NewWorkingVariables([]uint32{a, b, c, d, e, f, g, h})
 }
+
+func CompressChunk(initWorkingVar WorkingVariables, schedule []uint32, k []uint32) WorkingVariables {
+	currentWorkingVar := initWorkingVar
+
+	for i := 0; i < 64; i++ {
+		currentWorkingVar = CompressWord(currentWorkingVar, schedule[i], k[i])
+	}
+
+	return currentWorkingVar
+}

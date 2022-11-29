@@ -161,3 +161,15 @@ func TestCompressWord(t *testing.T) {
 
 	assert.Equal(t, compressed, compressedGood)
 }
+
+func TestCompressChunk(t *testing.T) {
+	schedule := MessageSchedule(getFirstBlockShort())
+	current, k := InitHash()
+	currentWorkingVar := NewWorkingVariables(current)
+
+	compressed := CompressChunk(currentWorkingVar, schedule, k)
+	compressedGood := NewWorkingVariables([]uint32{0x25395cdf, 0xa927bd11, 0xa31aea37, 0x5c752231, 0xbf9885ba, 0xc6d7d38e, 0xa9078007,
+		0x8051ad8b})
+
+	assert.Equal(t, compressed, compressedGood)
+}
