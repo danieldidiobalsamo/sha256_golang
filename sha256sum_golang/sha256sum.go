@@ -24,5 +24,5 @@ func main() {
     }
 
     hash := sha256_golang.Sha256(body)
-    fmt.Printf("%v %v", hash, filePath)
+    fmt.Printf("%v %v\n", hash, filePath)
 }
