@@ -4,7 +4,7 @@
 //
 //	body, _ := os.ReadFile("./sample_files_for_testing/sample.pdf")
 //	hash := Sha256(body)
-package sha256_golang
+package sha256_algo
 
 import (
 	"errors"

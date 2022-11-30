@@ -1,4 +1,4 @@
-package sha256_golang
+package sha256_algo
 
 import (
 	"github.com/stretchr/testify/assert"

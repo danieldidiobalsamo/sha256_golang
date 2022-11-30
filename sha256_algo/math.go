@@ -1,4 +1,4 @@
-package sha256_golang
+package sha256_algo
 
 import "math/bits"
 
