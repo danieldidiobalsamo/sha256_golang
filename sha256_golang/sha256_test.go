@@ -2,35 +2,36 @@ package sha256_golang
 
 import (
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
-func getShortMessage() string {
-	return "hi"
+func getShortMessage() []byte {
+	return []byte("hi")
 }
 
-func getLongMessage() string {
-	return "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+func getLongMessage() []byte {
+	return []byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 }
 
-func getShortPreProcessed() []uint32 {
+func getShortPreProcessed() []byte {
 	rawMsg := getShortMessage()
-	return PreProcess([]rune(rawMsg))
+	return PreProcess([]byte(rawMsg))
 }
 
-func getLongPreProcessed() []uint32 {
+func getLongPreProcessed() []byte {
 	rawMsg := getLongMessage()
-	return PreProcess([]rune(rawMsg))
+	return PreProcess([]byte(rawMsg))
 }
 
-func getFirstBlockShort() []uint32 {
+func getFirstBlockShort() []byte {
 	msg := getShortPreProcessed()
 	block, _ := ParseBlock(msg, 0)
 
 	return block
 }
 
-func getFirstBlockLong() []uint32 {
+func getFirstBlockLong() []byte {
 	msg := getLongPreProcessed()
 	block, _ := ParseBlock(msg, 0)
 
@@ -50,9 +51,9 @@ func getCompressedMsgShort() WorkingVariables {
 func TestPreProcessShort(t *testing.T) {
 
 	rawMsg := getShortMessage()
-	msg := PreProcess([]rune(rawMsg))
+	msg := PreProcess(rawMsg)
 
-	pre_processed_bytes := []uint32{104, 105, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	pre_processed_bytes := []byte{104, 105, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 16}
 
@@ -62,9 +63,9 @@ func TestPreProcessShort(t *testing.T) {
 func TestPreProcessLong(t *testing.T) {
 
 	rawMsg := getLongMessage()
-	msg := PreProcess([]rune(rawMsg))
+	msg := PreProcess(rawMsg)
 
-	pre_processed_bytes := []uint32{97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
+	pre_processed_bytes := []byte{97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
 		97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
 		97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
 		97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
@@ -80,7 +81,7 @@ func TestParseBlockValid(t *testing.T) {
 
 	block, _ := ParseBlock(msg, 0)
 
-	valid_block := []uint32{104, 105, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	valid_block := []byte{104, 105, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 16}
 
@@ -93,7 +94,7 @@ func TestParseBlockInvalid(t *testing.T) {
 
 	block, err := ParseBlock(msg, 65)
 
-	assert.Equal(t, []uint32([]uint32(nil)), block)
+	assert.Equal(t, []byte([]byte(nil)), block)
 	assert.EqualError(t, err, "index is greater than the number of 512-bits blocks")
 }
 
@@ -207,9 +208,9 @@ func TestAppendHashValues(t *testing.T) {
 }
 
 func TestSha256EmptyString(t *testing.T) {
-	msg := ""
+	msg := []byte("")
 
-	hash := Sha256([]rune(msg))
+	hash := Sha256(msg)
 	hashGood := "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
 	assert.Equal(t, hashGood, hash)
@@ -218,7 +219,7 @@ func TestSha256EmptyString(t *testing.T) {
 func TestSha256Short(t *testing.T) {
 	msg := getShortMessage()
 
-	hash := Sha256([]rune(msg))
+	hash := Sha256(msg)
 	hashGood := "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4"
 
 	assert.Equal(t, hashGood, hash)
@@ -227,8 +228,28 @@ func TestSha256Short(t *testing.T) {
 func TestSha256Long(t *testing.T) {
 	msg := getLongMessage()
 
-	hash := Sha256([]rune(msg))
+	hash := Sha256(msg)
 	hashGood := "3e24531cdaa595ab56f976b96c1a1df8009eabec300a5a0261c0e44f47a43b89"
+
+	assert.Equal(t, hashGood, hash)
+}
+
+func TestSha256TextFile(t *testing.T) {
+
+	body, _ := os.ReadFile("./sample_files_for_testing/sample")
+
+	hash := Sha256(body)
+	hashGood := "36397c2307ac636e820533dbd6834f9ce3901c8994d1a0a465b3f6a1cb68ba57"
+
+	assert.Equal(t, hashGood, hash)
+}
+
+func TestSha256BinaryFile(t *testing.T) {
+
+	body, _ := os.ReadFile("./sample_files_for_testing/sample.pdf")
+
+	hash := Sha256(body)
+	hashGood := "33a01222a96a287249d95ab053f5e91e971f0f8e9cf7b44b7f4c86401228c31b"
 
 	assert.Equal(t, hashGood, hash)
 }

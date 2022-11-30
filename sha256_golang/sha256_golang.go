@@ -6,14 +6,10 @@ import (
 	"reflect"
 )
 
-func PreProcess(msg []rune) []uint32 {
+func PreProcess(msg []byte) []byte {
 
 	// convert msg runes to uint32 and copy to proc
-	proc := make([]uint32, len(msg))
-
-	for i := range msg {
-		proc[i] = uint32(msg[i])
-	}
+	proc := msg
 
 	originalLengthBits := uint64(len(msg) * 8)
 
@@ -35,14 +31,14 @@ func PreProcess(msg []rune) []uint32 {
 	for i := 0; i < 8; i++ {
 		val64 := originalLengthBits & mask
 		val := uint8(val64 >> (56 - (8 * i)))
-		proc = append(proc, uint32(val))
+		proc = append(proc, val)
 		mask >>= 8
 	}
 
 	return proc
 }
 
-func ParseBlock(msg []uint32, index int) ([]uint32, error) {
+func ParseBlock(msg []byte, index int) ([]byte, error) {
 	nbBlocks := len(msg) / 64
 
 	if index > nbBlocks {
@@ -80,7 +76,7 @@ func InitHash() ([]uint32, []uint32) {
 	return h_0, k
 }
 
-func MessageSchedule(chunk []uint32) []uint32 {
+func MessageSchedule(chunk []byte) []uint32 {
 	// initialize the schedule with zeros
 	w := make([]uint32, 64)
 
@@ -92,7 +88,7 @@ func MessageSchedule(chunk []uint32) []uint32 {
 		word := uint32(0)
 
 		for j := 0; j < 4; j++ {
-			word |= (bytes_line[j]) << (24 - (8 * j))
+			word |= (uint32(bytes_line[j])) << (24 - (8 * j))
 		}
 
 		w[i] = word
@@ -165,7 +161,7 @@ func AppendHashValues(hashValues []uint32) string {
 	return hash
 }
 
-func Sha256(rawMsg []rune) string {
+func Sha256(rawMsg []byte) string {
 	msg := PreProcess(rawMsg)
 
 	hash, k := InitHash()
