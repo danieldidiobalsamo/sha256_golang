@@ -4,6 +4,8 @@
 //
 //	body, _ := os.ReadFile("./sample_files_for_testing/sample.pdf")
 //	hash := Sha256(body)
+//
+// check main package to see a basic version of sha256sum as an example
 package sha256_algo
 
 import (
