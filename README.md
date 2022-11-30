@@ -8,7 +8,7 @@ As an example of how to use this package, a basic version of sha256sum can be ru
 # How to install
 
 ~~~
-go install github.com/danieldidiobalsamo/sha256_golang
+go install github.com/danieldidiobalsamo/sha256_golang@latest
 $GOPATH/bin/sha256_golang <filepath>
 ~~~
 
