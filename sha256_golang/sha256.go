@@ -47,7 +47,7 @@ func preProcess(msg []byte) []byte {
 func parseBlock(msg []byte, index int) ([]byte, error) {
 	nbBlocks := len(msg) / 64
 
-	if index > nbBlocks {
+	if index >= nbBlocks {
 		return nil, errors.New("index is greater than the number of 512-bits blocks")
 	}
 
@@ -178,7 +178,13 @@ func Sha256(rawMsg []byte) string {
 	for i := 0; i < nbBlocks; i++ {
 		workingVar = newWorkingVariables(hash)
 
-		block, _ := parseBlock(msg, i) // TODO gérer l'erreur
+		block, err := parseBlock(msg, i)
+
+		if err != nil {
+			fmt.Println(err)
+			fmt.Printf("Can't parse block %v, message only has %v blocks", i, nbBlocks)
+			return ""
+		}
 
 		schedule := messageSchedule(block)
 		workingVar = compressChunk(workingVar, schedule, k)
