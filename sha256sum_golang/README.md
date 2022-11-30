@@ -11,4 +11,4 @@ $GOPATH/bin/sha256sum_golang <filepath>
 
 # SHA256 implementation
 
-For more informations about the implementation, please check this [repo](../sha256_golang/README.md)
+For more informations about the implementation, please check this [repo](../sha256_golang)
