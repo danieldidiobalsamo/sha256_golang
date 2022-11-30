@@ -1,6 +1,7 @@
 package sha256_golang
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -236,7 +237,13 @@ func TestSha256Long(t *testing.T) {
 
 func TestSha256TextFile(t *testing.T) {
 
-	body, _ := os.ReadFile("./sample_files_for_testing/sample")
+	body, err := os.ReadFile("./sample_files_for_testing/sample")
+
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
 
 	hash := Sha256(body)
 	hashGood := "36397c2307ac636e820533dbd6834f9ce3901c8994d1a0a465b3f6a1cb68ba57"
@@ -246,7 +253,13 @@ func TestSha256TextFile(t *testing.T) {
 
 func TestSha256BinaryFile(t *testing.T) {
 
-	body, _ := os.ReadFile("./sample_files_for_testing/sample.pdf")
+	body, err := os.ReadFile("./sample_files_for_testing/sample.pdf")
+
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
 
 	hash := Sha256(body)
 	hashGood := "33a01222a96a287249d95ab053f5e91e971f0f8e9cf7b44b7f4c86401228c31b"
