@@ -1,3 +1,9 @@
+// This package provides a from scratch SHA256 implementation
+//
+// You can directly provide file content to Sha256 function, for example :
+//
+//	body, _ := os.ReadFile("./sample_files_for_testing/sample.pdf")
+//	hash := Sha256(body)
 package sha256_golang
 
 import (
