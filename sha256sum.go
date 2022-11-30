@@ -1,4 +1,4 @@
-// This package is an example of usage for github.com/sha256_golang package
+// This package is an example for sha256_algo package
 package main
 
 import (
