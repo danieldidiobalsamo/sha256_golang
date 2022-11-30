@@ -103,7 +103,7 @@ func messageSchedule(chunk []byte) []uint32 {
 	return w
 }
 
-func compressWord(current WorkingVariables, word uint32, k uint32) WorkingVariables {
+func compressWord(current workingVariables, word uint32, k uint32) workingVariables {
 	s1 := bigSigma_1(current.e)
 	ch := choice(current.e, current.f, current.g)
 	temp1 := current.h + s1 + ch + k + word
@@ -123,7 +123,7 @@ func compressWord(current WorkingVariables, word uint32, k uint32) WorkingVariab
 	return newWorkingVariables([]uint32{a, b, c, d, e, f, g, h})
 }
 
-func compressChunk(initWorkingVar WorkingVariables, schedule []uint32, k []uint32) WorkingVariables {
+func compressChunk(initWorkingVar workingVariables, schedule []uint32, k []uint32) workingVariables {
 	currentWorkingVar := initWorkingVar
 
 	for i := 0; i < 64; i++ {
@@ -133,7 +133,7 @@ func compressChunk(initWorkingVar WorkingVariables, schedule []uint32, k []uint3
 	return currentWorkingVar
 }
 
-func addCompressedChunkInHash(hash []uint32, compressed WorkingVariables) []uint32 {
+func addCompressedChunkInHash(hash []uint32, compressed workingVariables) []uint32 {
 	var updated []uint32
 
 	values := reflect.ValueOf(compressed)
@@ -165,7 +165,7 @@ func Sha256(rawMsg []byte) string {
 	msg := preProcess(rawMsg)
 
 	hash, k := initHash()
-	var workingVar WorkingVariables
+	var workingVar workingVariables
 
 	nbBlocks := len(msg) / 64
 

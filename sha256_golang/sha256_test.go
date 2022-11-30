@@ -38,7 +38,7 @@ func getFirstBlockLong() []byte {
 	return block
 }
 
-func getCompressedMsgShort() WorkingVariables {
+func getCompressedMsgShort() workingVariables {
 	schedule := messageSchedule(getFirstBlockShort())
 	current, k := initHash()
 	currentWorkingVar := newWorkingVariables(current)
