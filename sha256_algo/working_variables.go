@@ -1,4 +1,4 @@
-package sha256_golang
+package sha256_algo
 
 //    This code defines a structure for variables named as "working variables" in SHA specification
 //    It stores intermediary values for the compression function.

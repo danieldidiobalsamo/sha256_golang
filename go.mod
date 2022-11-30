@@ -1,4 +1,4 @@
-module github.com/sha256_golang
+module github.com/danieldidiobalsamo/sha256_golang
 
 go 1.19
 

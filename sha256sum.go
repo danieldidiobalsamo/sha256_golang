@@ -5,7 +5,7 @@ import (
     "fmt"
     "os"
 
-    "github.com/sha256_golang"
+    "github.com/danieldidiobalsamo/sha256_golang/sha256_algo"
 )
 
 func main() {
@@ -23,6 +23,6 @@ func main() {
         return
     }
 
-    hash := sha256_golang.Sha256(body)
+    hash := sha256_algo.Sha256(body)
     fmt.Printf("%v %v\n", hash, filePath)
 }
