@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-func PreProcess(msg []byte) []byte {
+func preProcess(msg []byte) []byte {
 
 	// convert msg runes to uint32 and copy to proc
 	proc := msg
@@ -38,7 +38,7 @@ func PreProcess(msg []byte) []byte {
 	return proc
 }
 
-func ParseBlock(msg []byte, index int) ([]byte, error) {
+func parseBlock(msg []byte, index int) ([]byte, error) {
 	nbBlocks := len(msg) / 64
 
 	if index > nbBlocks {
@@ -51,7 +51,7 @@ func ParseBlock(msg []byte, index int) ([]byte, error) {
 	return msg[start:end], nil
 }
 
-func InitHash() ([]uint32, []uint32) {
+func initHash() ([]uint32, []uint32) {
 	// first thirty-two bits of the fractional parts of the square roots of the first eight prime numbers
 	// set by the SHA-256 specification
 	h_0 := []uint32{
@@ -76,7 +76,7 @@ func InitHash() ([]uint32, []uint32) {
 	return h_0, k
 }
 
-func MessageSchedule(chunk []byte) []uint32 {
+func messageSchedule(chunk []byte) []uint32 {
 	// initialize the schedule with zeros
 	w := make([]uint32, 64)
 
@@ -97,18 +97,18 @@ func MessageSchedule(chunk []byte) []uint32 {
 	// schedule
 
 	for i := 16; i <= 63; i++ {
-		w[i] = Sigma_0(w[i-15]) + w[i-7] + Sigma_1(w[i-2]) + w[i-16]
+		w[i] = sigma_0(w[i-15]) + w[i-7] + sigma_1(w[i-2]) + w[i-16]
 	}
 
 	return w
 }
 
-func CompressWord(current WorkingVariables, word uint32, k uint32) WorkingVariables {
-	s1 := BigSigma_1(current.e)
-	ch := Choice(current.e, current.f, current.g)
+func compressWord(current WorkingVariables, word uint32, k uint32) WorkingVariables {
+	s1 := bigSigma_1(current.e)
+	ch := choice(current.e, current.f, current.g)
 	temp1 := current.h + s1 + ch + k + word
-	s0 := BigSigma_0(current.a)
-	maj := Majority(current.a, current.b, current.c)
+	s0 := bigSigma_0(current.a)
+	maj := majority(current.a, current.b, current.c)
 	temp2 := s0 + maj
 
 	h := current.g
@@ -120,20 +120,20 @@ func CompressWord(current WorkingVariables, word uint32, k uint32) WorkingVariab
 	b := current.a
 	a := temp1 + temp2
 
-	return NewWorkingVariables([]uint32{a, b, c, d, e, f, g, h})
+	return newWorkingVariables([]uint32{a, b, c, d, e, f, g, h})
 }
 
-func CompressChunk(initWorkingVar WorkingVariables, schedule []uint32, k []uint32) WorkingVariables {
+func compressChunk(initWorkingVar WorkingVariables, schedule []uint32, k []uint32) WorkingVariables {
 	currentWorkingVar := initWorkingVar
 
 	for i := 0; i < 64; i++ {
-		currentWorkingVar = CompressWord(currentWorkingVar, schedule[i], k[i])
+		currentWorkingVar = compressWord(currentWorkingVar, schedule[i], k[i])
 	}
 
 	return currentWorkingVar
 }
 
-func AddCompressedChunkInHash(hash []uint32, compressed WorkingVariables) []uint32 {
+func addCompressedChunkInHash(hash []uint32, compressed WorkingVariables) []uint32 {
 	var updated []uint32
 
 	values := reflect.ValueOf(compressed)
@@ -150,7 +150,7 @@ func AddCompressedChunkInHash(hash []uint32, compressed WorkingVariables) []uint
 	return updated
 }
 
-func AppendHashValues(hashValues []uint32) string {
+func appendHashValues(hashValues []uint32) string {
 	var hash string
 
 	for _, h := range hashValues {
@@ -162,22 +162,22 @@ func AppendHashValues(hashValues []uint32) string {
 }
 
 func Sha256(rawMsg []byte) string {
-	msg := PreProcess(rawMsg)
+	msg := preProcess(rawMsg)
 
-	hash, k := InitHash()
+	hash, k := initHash()
 	var workingVar WorkingVariables
 
 	nbBlocks := len(msg) / 64
 
 	for i := 0; i < nbBlocks; i++ {
-		workingVar = NewWorkingVariables(hash)
+		workingVar = newWorkingVariables(hash)
 
-		block, _ := ParseBlock(msg, i) // TODO gérer l'erreur
+		block, _ := parseBlock(msg, i) // TODO gérer l'erreur
 
-		schedule := MessageSchedule(block)
-		workingVar = CompressChunk(workingVar, schedule, k)
-		hash = AddCompressedChunkInHash(hash, workingVar)
+		schedule := messageSchedule(block)
+		workingVar = compressChunk(workingVar, schedule, k)
+		hash = addCompressedChunkInHash(hash, workingVar)
 	}
 
-	return AppendHashValues(hash)
+	return appendHashValues(hash)
 }

@@ -16,34 +16,34 @@ func getLongMessage() []byte {
 
 func getShortPreProcessed() []byte {
 	rawMsg := getShortMessage()
-	return PreProcess([]byte(rawMsg))
+	return preProcess([]byte(rawMsg))
 }
 
 func getLongPreProcessed() []byte {
 	rawMsg := getLongMessage()
-	return PreProcess([]byte(rawMsg))
+	return preProcess([]byte(rawMsg))
 }
 
 func getFirstBlockShort() []byte {
 	msg := getShortPreProcessed()
-	block, _ := ParseBlock(msg, 0)
+	block, _ := parseBlock(msg, 0)
 
 	return block
 }
 
 func getFirstBlockLong() []byte {
 	msg := getLongPreProcessed()
-	block, _ := ParseBlock(msg, 0)
+	block, _ := parseBlock(msg, 0)
 
 	return block
 }
 
 func getCompressedMsgShort() WorkingVariables {
-	schedule := MessageSchedule(getFirstBlockShort())
-	current, k := InitHash()
-	currentWorkingVar := NewWorkingVariables(current)
+	schedule := messageSchedule(getFirstBlockShort())
+	current, k := initHash()
+	currentWorkingVar := newWorkingVariables(current)
 
-	compressed := CompressChunk(currentWorkingVar, schedule, k)
+	compressed := compressChunk(currentWorkingVar, schedule, k)
 
 	return compressed
 }
@@ -51,7 +51,7 @@ func getCompressedMsgShort() WorkingVariables {
 func TestPreProcessShort(t *testing.T) {
 
 	rawMsg := getShortMessage()
-	msg := PreProcess(rawMsg)
+	msg := preProcess(rawMsg)
 
 	pre_processed_bytes := []byte{104, 105, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -63,7 +63,7 @@ func TestPreProcessShort(t *testing.T) {
 func TestPreProcessLong(t *testing.T) {
 
 	rawMsg := getLongMessage()
-	msg := PreProcess(rawMsg)
+	msg := preProcess(rawMsg)
 
 	pre_processed_bytes := []byte{97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
 		97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
@@ -79,7 +79,7 @@ func TestParseBlockValid(t *testing.T) {
 
 	msg := getShortPreProcessed()
 
-	block, _ := ParseBlock(msg, 0)
+	block, _ := parseBlock(msg, 0)
 
 	valid_block := []byte{104, 105, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -92,14 +92,14 @@ func TestParseBlockInvalid(t *testing.T) {
 
 	msg := getShortPreProcessed()
 
-	block, err := ParseBlock(msg, 65)
+	block, err := parseBlock(msg, 65)
 
 	assert.Equal(t, []byte([]byte(nil)), block)
 	assert.EqualError(t, err, "index is greater than the number of 512-bits blocks")
 }
 
 func TestHashInit(t *testing.T) {
-	h_0, k := InitHash()
+	h_0, k := initHash()
 
 	h0Good := []uint32{
 		0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab,
@@ -124,7 +124,7 @@ func TestHashInit(t *testing.T) {
 
 func TestMessageScheduleShort(t *testing.T) {
 	block := getFirstBlockShort()
-	schedule := MessageSchedule(block)
+	schedule := messageSchedule(block)
 
 	goodSchedule := []uint32{
 		0x68698000, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x10,
@@ -142,7 +142,7 @@ func TestMessageScheduleShort(t *testing.T) {
 
 func TestMessageScheduleLong(t *testing.T) {
 	block := getFirstBlockLong()
-	schedule := MessageSchedule(block)
+	schedule := messageSchedule(block)
 
 	goodSchedule := []uint32{
 		0x61616161, 0x61616161, 0x61616161, 0x61616161, 0x61616161, 0x61616161, 0x61616161,
@@ -161,35 +161,35 @@ func TestMessageScheduleLong(t *testing.T) {
 }
 
 func TestCompressWord(t *testing.T) {
-	schedule := MessageSchedule(getFirstBlockShort())
+	schedule := messageSchedule(getFirstBlockShort())
 
-	current, k := InitHash()
-	currentWorkingVar := NewWorkingVariables(current)
+	current, k := initHash()
+	currentWorkingVar := newWorkingVariables(current)
 
-	compressed := CompressWord(currentWorkingVar, schedule[0], k[0])
-	compressedGood := NewWorkingVariables([]uint32{0x6472084d, 0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0x13162a2, 0x510e527f, 0x9b05688c,
+	compressed := compressWord(currentWorkingVar, schedule[0], k[0])
+	compressedGood := newWorkingVariables([]uint32{0x6472084d, 0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0x13162a2, 0x510e527f, 0x9b05688c,
 		0x1f83d9ab})
 
 	assert.Equal(t, compressed, compressedGood)
 }
 
 func TestCompressChunk(t *testing.T) {
-	schedule := MessageSchedule(getFirstBlockShort())
-	current, k := InitHash()
-	currentWorkingVar := NewWorkingVariables(current)
+	schedule := messageSchedule(getFirstBlockShort())
+	current, k := initHash()
+	currentWorkingVar := newWorkingVariables(current)
 
-	compressed := CompressChunk(currentWorkingVar, schedule, k)
-	compressedGood := NewWorkingVariables([]uint32{0x25395cdf, 0xa927bd11, 0xa31aea37, 0x5c752231, 0xbf9885ba, 0xc6d7d38e, 0xa9078007,
+	compressed := compressChunk(currentWorkingVar, schedule, k)
+	compressedGood := newWorkingVariables([]uint32{0x25395cdf, 0xa927bd11, 0xa31aea37, 0x5c752231, 0xbf9885ba, 0xc6d7d38e, 0xa9078007,
 		0x8051ad8b})
 
 	assert.Equal(t, compressed, compressedGood)
 }
 
 func TestAddCompressedChunkInHash(t *testing.T) {
-	hash, _ := InitHash()
+	hash, _ := initHash()
 	compressed := getCompressedMsgShort()
 
-	updatedHash := AddCompressedChunkInHash(hash, compressed)
+	updatedHash := addCompressedChunkInHash(hash, compressed)
 	updatedGood := []uint32{0x8f434346, 0x648f6b96, 0xdf89dda9, 0x01c5176b, 0x10a6d839, 0x61dd3c1a, 0xc88b59b2,
 		0xdc327aa4}
 
@@ -201,7 +201,7 @@ func TestAppendHashValues(t *testing.T) {
 		0x8f434346, 0x648f6b96, 0xdf89dda9, 0x01c5176b, 0x10a6d839, 0x61dd3c1a, 0xc88b59b2,
 		0xdc327aa4}
 
-	hash := AppendHashValues(updated_hash)
+	hash := appendHashValues(updated_hash)
 	hashGood := "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4"
 
 	assert.Equal(t, hashGood, hash)
